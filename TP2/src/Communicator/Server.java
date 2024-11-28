@@ -13,16 +13,13 @@ import java.util.ArrayList;
 public class Server {
     private Socket client = null;
     private ServerSocket server = null;
-    private DataInputStream in = null;
+
     private DataOutputStream out = null;
 
 
     public Server(int port) throws IOException {
 
         this.server = new ServerSocket(port);
-        client = server.accept();
-
-
         // threads
 
         ArrayList<MyRunable> runners = new ArrayList<MyRunable>();
@@ -33,9 +30,25 @@ public class Server {
             pool.add(new Thread(runners.get(i),"Game" + Integer.toString(i)));
         }
 
+        while(true){
+            client = server.accept();
+            Thread t = pool.get(0);
+            if(!t.isAlive()){
+                t.start();
+            }
+            MyRunable r = runners.get(0);
+            if(r.needClient()){
+                r.addClient(client);
+            }
+            else {
+                out = new DataOutputStream(client.getOutputStream());
+                out.writeUTF("No more connection available.");
+                out.close();
+                client.close();
+            }
+
+        }
 
 
-        client.close();
-        in.close();
     }
 }
