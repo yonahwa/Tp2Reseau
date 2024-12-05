@@ -16,7 +16,7 @@ public class MyRunable implements Runnable{
     private FileWriter f = null;
     private ArrayList<Socket> clients = null;
     private boolean start = false;
-    private char[][] colonne = new char [3][3];
+    private char[][] grille = new char [3][3];
     private DataInputStream in = null;
     private DataOutputStream out = null;
     private boolean P1Turn = true;
@@ -43,6 +43,10 @@ public class MyRunable implements Runnable{
         }
     }
 
+    private void close(){
+        //close les sockets
+    }
+
     @Override
     public void run() {
         if(!needClient()) {
@@ -53,12 +57,13 @@ public class MyRunable implements Runnable{
             DataInputStream in2 = null;
             Scanner scan1 = new Scanner(in1);
             Scanner scan2 = new Scanner(in2);
+            String[] answer = new String[2];
 
             if (!start) {
                 start = true;
                 for (int i = 0; i < 3; i++) {
                     for (int y = 0; y < 3; y++) {
-                        colonne[i][y] = ' ';
+                        grille[i][y] = ' ';
                     }
                 }
 
@@ -92,13 +97,109 @@ public class MyRunable implements Runnable{
                     if (scan2.hasNextLine()){
                         out2.writeUTF("Not your turn wait until i say you can play.");
                     }
-                    
+                    out1.writeUTF(" |0|1|2|\n--------\n0|" + grille[0][0] + "|" + grille[0][1] + "|" + grille[0][2] + "|\n--------\n1|" + grille[1][0] + "|" + grille[1][1] + "|" + grille[1][2] + "|\n--------\n2|" + grille[2][0] + "|" + grille[2][1] + "|" + grille[2][2] + "|\n");
+                    out1.writeUTF("what's your move write the answer like that: 0,0 or 2,1");
+                    answer = scan1.nextLine().split(",");
+                    int x = Integer.parseInt(answer[0]);
+                    int y = Integer.parseInt(answer[1]);
+                    grille[y][x] = 'X';
 
+                    for(int i = 0; i < 2; i++){
+                        for(int w = 0; w < 2; w++){
+                            if(grille[i][w] == 'X'){
+                                if(w == 2){
+                                    out1.writeUTF("You Win");
+                                }
+                            }
+                            else{
+                                break;
+                            }
+                        }
+                    }
+                    for(int i = 0; i < 2; i++){
+                        for(int w = 0; w < 2; w++){
+                            if(grille[w][i] == 'X'){
+                                if(i == 2){
+                                    out.writeUTF("You Win");
+                                }
+                            }
+                            else{
+                                break;
+                            }
+                        }
+                    }
+                    for(int w = 0; w < 2; w++){
+                        if(grille[w][w] == 'X'){
+                            if(w == 2){
+                                out.writeUTF("You Win");
+                            }
+                        }
+
+                    }
+                    for(int w = 2; w > 0; w--){
+                        if(grille[w][w] == 'X'){
+                            if(w == 2){
+                                out.writeUTF("You Win");
+
+                            }
+                        }
+
+                    }
+
+                    P1Turn = false;
                 }
                 else {
                     if (scan1.hasNextLine()){
                         out1.writeUTF("Not your turn wait until i say you can play.");
                     }
+                    out1.writeUTF(" |0|1|2|\n--------\n0|" + grille[0][0] + "|" + grille[0][1] + "|" + grille[0][2] + "|\n--------\n1|" + grille[1][0] + "|" + grille[1][1] + "|" + grille[1][2] + "|\n--------\n2|" + grille[2][0] + "|" + grille[2][1] + "|" + grille[2][2] + "|\n");
+                    out1.writeUTF("what's your move write the answer like that: 0,0 or 2,1");
+                    answer = scan1.nextLine().split(",");
+                    int x = Integer.parseInt(answer[0]);
+                    int y = Integer.parseInt(answer[1]);
+                    grille[y][x] = 'O';
+
+                    for(int i = 0; i < 2; i++){
+                        for(int w = 0; w < 2; i++){
+                            if(grille[i][w] == 'O'){
+                                if(w == 2){
+                                    out1.writeUTF("You Win");
+                                }
+                            }
+                            else{
+                                break;
+                            }
+                        }
+                    }
+                    for(int i = 0; i < 2; i++){
+                        for(int w = 0; w < 2; i++){
+                            if(grille[w][i] == 'O'){
+                                if(i == 2){
+                                    out.writeUTF("You Win");
+                                }
+                            }
+                            else{
+                                break;
+                            }
+                        }
+                    }
+                    for(int w = 0; w < 2; w++){
+                        if(grille[w][w] == 'O'){
+                            if(w == 2){
+                                out1.writeUTF("You Win");
+                            }
+                        }
+
+                    }
+                    for(int w = 2; w > 0; w--){
+                        if(grille[w][w] == 'O'){
+                            if(w == 2){
+                                out.writeUTF("You Win");
+                            }
+                        }
+
+                    }
+                    P1Turn = true;
                 }
 
             } catch (IOException e) {
