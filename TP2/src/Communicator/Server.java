@@ -29,18 +29,28 @@ public class Server {
             runners.add(new MyRunable());
             pool.add(new Thread(runners.get(i),"Game" + Integer.toString(i)));
         }
-
+        int i = 0;
         while(true){
             client = server.accept();
-            Thread t = pool.get(0);
+            Thread t = pool.get(i);
             if(!t.isAlive()){
                 t.start();
             }
-            MyRunable r = runners.get(0);
+            MyRunable r = runners.get(i);
             if(r.needClient()){
                 r.addClient(client);
-            }
-            else {
+            } else if (i<16) {
+                i++;
+                for (int y = 0; y < 16; y++){
+                    MyRunable verif = runners.get(y);
+                    if(verif.needClient()){
+                        if(y<i){
+                            i = y;
+                            break;
+                        }
+                    }
+                }
+            } else {
                 out = new DataOutputStream(client.getOutputStream());
                 out.writeUTF("No more connection available.");
                 out.close();

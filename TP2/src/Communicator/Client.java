@@ -22,22 +22,29 @@ public class Client {
 
         out = new DataOutputStream(server.getOutputStream());
 
+
         String line= "";
+        String servline = "";
 
         Scanner scan = new Scanner(in);
 
-        while(!line.equals("Fini")){
+
+        while(true){
             try{
-                line =  scan.nextLine();
-                out.writeUTF(line);
+                if (scan.hasNextLine()){
+                    line =  scan.nextLine();
+                    out.writeUTF(line);
+                }
+                servline = in.readUTF();
+                System.out.println(servline);
             }
             catch(IOException e){
                 System.out.println(e);
             }
-
+            if (server == null){
+                server.close();
+            }
         }
-        in.close();
-        out.close();
-        server.close();
+
     }
 }

@@ -43,8 +43,18 @@ public class MyRunable implements Runnable{
         }
     }
 
-    private void close(){
+    private void closeClients(){
         //close les sockets
+        for(Socket client : clients){
+            if(client != null && !client.isClosed()){
+                try {
+                    client.close();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+        clients.clear();
     }
 
     @Override
@@ -104,11 +114,14 @@ public class MyRunable implements Runnable{
                     int y = Integer.parseInt(answer[1]);
                     grille[y][x] = 'X';
 
+                    //verif P1
+
                     for(int i = 0; i < 2; i++){
                         for(int w = 0; w < 2; w++){
                             if(grille[i][w] == 'X'){
                                 if(w == 2){
                                     out1.writeUTF("You Win");
+                                    closeClients();
                                 }
                             }
                             else{
@@ -121,6 +134,7 @@ public class MyRunable implements Runnable{
                             if(grille[w][i] == 'X'){
                                 if(i == 2){
                                     out.writeUTF("You Win");
+                                    closeClients();
                                 }
                             }
                             else{
@@ -132,6 +146,7 @@ public class MyRunable implements Runnable{
                         if(grille[w][w] == 'X'){
                             if(w == 2){
                                 out.writeUTF("You Win");
+                                closeClients();
                             }
                         }
 
@@ -140,6 +155,7 @@ public class MyRunable implements Runnable{
                         if(grille[w][w] == 'X'){
                             if(w == 2){
                                 out.writeUTF("You Win");
+                                closeClients();
 
                             }
                         }
@@ -159,11 +175,14 @@ public class MyRunable implements Runnable{
                     int y = Integer.parseInt(answer[1]);
                     grille[y][x] = 'O';
 
+                    //verif P2
+
                     for(int i = 0; i < 2; i++){
                         for(int w = 0; w < 2; i++){
                             if(grille[i][w] == 'O'){
                                 if(w == 2){
                                     out1.writeUTF("You Win");
+                                    closeClients();
                                 }
                             }
                             else{
@@ -176,6 +195,7 @@ public class MyRunable implements Runnable{
                             if(grille[w][i] == 'O'){
                                 if(i == 2){
                                     out.writeUTF("You Win");
+                                    closeClients();
                                 }
                             }
                             else{
@@ -187,6 +207,7 @@ public class MyRunable implements Runnable{
                         if(grille[w][w] == 'O'){
                             if(w == 2){
                                 out1.writeUTF("You Win");
+                                closeClients();
                             }
                         }
 
@@ -195,6 +216,7 @@ public class MyRunable implements Runnable{
                         if(grille[w][w] == 'O'){
                             if(w == 2){
                                 out.writeUTF("You Win");
+                                closeClients();
                             }
                         }
 
@@ -222,56 +244,3 @@ public class MyRunable implements Runnable{
         return clients.size() < 2;
     }
 }
-/*import java.util.ArrayList;
-import java.util.Scanner;
-
-public class Main {
-    public static void main(String[] args) {
-        ArrayList<MyRunable> runners = new ArrayList<MyRunable>();
-        ArrayList<Thread> pool = new ArrayList<Thread>();
-
-        runners.add(new MyRunable());
-        runners.add(new MyRunable());
-        runners.add(new MyRunable());
-
-        pool.add(new Thread(runners.get(0), "Gab"));
-        pool.add(new Thread(runners.get(1), "Jonah"));
-        pool.add(new Thread(runners.get(2), "Vincent"));
-
-        for(int i =0; i< pool.size(); ++i){
-            pool.get(i).start();
-        }
-
-        Scanner in = new Scanner(System.in);
-        System.out.println("Ready !");
-
-        while(true){
-            try{
-                if(in.hasNextLine()){
-                    String cmd = in.next();
-                    if(cmd.equals("End")){
-                        String test =in.next();
-                        for(int i =0; i< pool.size(); ++i){
-                            if(test.equals(pool.get(i).getName()) || test.equals("All")){
-                                runners.get(i).stop();
-                            }
-
-                        }
-                    }
-                    if(cmd.equals("Msg")){
-                        String test =in.next();
-                        String message = in.next();
-                        for(int i =0; i< pool.size(); ++i){
-                            if(test.equals(pool.get(i).getName()) || test.equals("All")){
-                                runners.get(i).send(in.next(message));
-                            }
-
-                        }
-                    }
-                }
-            }
-            catch (Exception e){}
-        }
-
-    }
-}*/
